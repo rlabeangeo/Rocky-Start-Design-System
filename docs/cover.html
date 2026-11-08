@@ -1,0 +1,129 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Rocky Start Exploration Services: cover</title>
+<link rel="stylesheet" href="../tokens/tokens.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Alegreya+SC:wght@500;700&family=Courier+Prime:wght@400;700&family=Kalam&display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; background: var(--paper); }
+  .cover { position: relative; width: 960px; height: 352px; overflow: hidden; background: var(--paper); }
+  svg { position: absolute; left: 0; top: 0; }
+  .ochre { fill: var(--ochre); }
+  .rust  { fill: var(--rust); }
+  .ink   { fill: var(--ink); }
+  .slate { fill: var(--slate); }
+  .pine  { fill: var(--pine); }
+  .dot   { fill: var(--ink-muted); }
+  .trace { fill: none; stroke: var(--ink); stroke-width: 1; stroke-linecap: round; stroke-linejoin: round; opacity: var(--opacity-pencil-line); }
+  .stroke { opacity: var(--opacity-marker); }
+  .text { position: absolute; left: 40px; top: 176px; }
+  h1 { margin: 0; font-family: var(--font-smallcaps); font-weight: 500; font-size: 64px; line-height: .95; color: var(--ink); letter-spacing: 0.01em; }
+  p  { margin: 8px 0 0; font-family: var(--font-typewriter); font-size: 14px; line-height: 20px; color: var(--ink-muted); max-width: 440px; }
+</style>
+</head>
+<body>
+<div class="cover">
+  <svg width="960" height="352" viewBox="0 0 960 352" aria-hidden="true">
+    <!--
+      blocks: ochre 20, rust 36, ink 8, slate 24, pine 24 tall (sum 112) × ~552–648 wide, each ruled as 1–3 flat wide chisel-marker strokes at opacity-marker, overlapping 1–5px with tapering seams; radius-none.
+      arrangement: top-band skeleton (name too wide for the 440px zone). Strata stacked from x≈40, long edges straight as if ruled; stroke ends vary, eroded back in space-6 (24px) steps.
+      pattern: printed dot paper (precise/technical row), chosen because the README calls the 24px step "the field-book grid": perfect dots on an exact space-6 grid across the whole cover, beneath the strata; peak opacity-dot-max in the top-right corner, fading along an edge parallel to the title's stepped right edge and gone 12px before the lettering.
+      scales: band heights space-2 multiples; dot pitch space-6; straight ruled edges, rough-displace 0.6, rough-overshoot 4px on pencil rules; flat fills; variation in the seams and stroke ends.
+    -->
+    <defs>
+      <!-- Alcohol marker: each pass lays down flat, even colour; only the edge is very slightly soft. Shapes only, never text. -->
+      <filter id="pencil" x="-2%" y="-10%" width="104%" height="120%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="2" seed="7" result="n"/>
+        <feDisplacementMap in="SourceGraphic" in2="n" scale="0.6" xChannelSelector="R" yChannelSelector="G"/>
+      </filter>
+    </defs>
+    <g id="grid"></g>
+    <g id="bands" filter="url(#pencil)"></g>
+    <g id="traces"></g>
+  </svg>
+  <div class="text">
+    <h1><span id="l1">Rocky Start</span><br><span id="l2">Exploration Services</span></h1>
+    <p>Geology starts, and ends, in the rocks.</p>
+  </div>
+</div>
+<script>
+  // Seeded, so the "hand" draws the same picture every time.
+  function rng(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+  const R = rng(20261023), ns = 'http://www.w3.org/2000/svg';
+  const el = (tag, attrs, parent) => { const e = document.createElementNS(ns, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); parent.appendChild(e); return e; };
+  const f = n => n.toFixed(1);
+  const path = pts => 'M' + pts.map(p => f(p[0]) + ' ' + f(p[1])).join(' L');
+
+  // Printed dot paper across the whole cover, beneath the strata. Strongest in the top-right corner, fading toward
+  // the title along an edge parallel to the line joining the end of "Rocky Start" to the end of "Exploration Services",
+  // and gone just before the lettering. Measured live, once the title face has loaded.
+  const g = document.getElementById('grid');
+  function drawDots() {
+    g.textContent = '';
+    const max = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--opacity-dot-max')) || 0.6;
+    const box = document.querySelector('.cover').getBoundingClientRect();
+    const a = document.getElementById('l1').getBoundingClientRect(), b = document.getElementById('l2').getBoundingClientRect();
+    // the title's stepped right edge, through the top-right corners of its two lines (cover coordinates)
+    let x1 = a.right - box.left, y1 = a.top - box.top, x2 = b.right - box.left, y2 = b.top - box.top;
+    if (!(x2 > x1 && y2 > y1)) { x1 = 448; y1 = 176; x2 = 782; y2 = 237; }   // fallback: Alegreya SC 500 at 64px
+    const len = Math.hypot(x2 - x1, y2 - y1), nx = (y2 - y1) / len, ny = -(x2 - x1) / len;   // unit normal, up and to the right
+    const clear = 12;                                              // dots are gone this far before the lettering
+    const pts = [];
+    for (let r = 0; r < 14; r++) for (let c = 0; c < 39; c++) pts.push([16 + c*24, 24 + r*24]);
+    const d = pts.map(([x, y]) => (x - x1)*nx + (y - y1)*ny - clear);   // distance beyond the clear zone, toward the corner
+    const reach = Math.max(...d);
+    pts.forEach(([x, y], i) => {
+      if (d[i] <= 0) return;
+      const k = d[i] / reach;
+      if (k < 0.03) return;
+      el('circle', {class: 'dot', cx: x, cy: y, r: 2, 'fill-opacity': (max * Math.pow(k, 1.1)).toFixed(3)}, g);
+    });
+  }
+  drawDots();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(drawDots);
+
+  // Strata, ruled with a wide chisel marker against a straight edge: 1–3 strokes per layer by thickness.
+  // Each stroke is one flat, even pass. The variation lives where strokes overlap: each overlap is 1–5px and
+  // tapers along its length (the ruler shifted a hair between passes), so the darker seams vary; plus the stroke ends.
+  const layers = [
+    {cls:'ochre', y:32,  h:20, end:600}, {cls:'rust', y:52, h:36, end:648}, {cls:'ink', y:88, h:8, end:576},
+    {cls:'slate', y:96,  h:24, end:624}, {cls:'pine', y:120, h:24, end:552}
+  ];
+  const gB = document.getElementById('bands');
+  // Every boundary between strokes (inside a layer and between layers) gets its own overlap at the left and right.
+  const seam = () => ({l: 1 + R()*4, r: 1 + R()*4});
+  const strokes = [];
+  layers.forEach(L => {
+    const n = L.h <= 12 ? 1 : L.h <= 26 ? 2 : 3;
+    for (let k = 0; k < n; k++) strokes.push({cls: L.cls, y0: L.y + k*L.h/n, y1: L.y + (k+1)*L.h/n, end: L.end, k});
+  });
+  const seams = strokes.map(() => seam());
+  strokes.forEach((S, i) => {
+    const up = i ? seams[i-1] : {l: 0, r: 0}, dn = i < strokes.length-1 ? seams[i] : {l: 0, r: 0};
+    const xs = 38 + R()*8, xe = S.end + (R()-0.5)*22 - S.k*R()*10;
+    // straight top and bottom edges: each is a ruled line, its overlap with the neighbour differing at either end
+    const topAt = x => { const t = (x - xs)/(xe - xs); return S.y0 - (up.l*(1-t) + up.r*t)/2; };
+    const botAt = x => { const t = (x - xs)/(xe - xs); return S.y1 + (dn.l*(1-t) + dn.r*t)/2; };
+    const lean = (R()-0.5) * 8, leanE = 2 + R()*6;      // chisel nib: slanted start, slanted end
+    const pts = [[xs + lean/2, topAt(xs)], [xe + leanE, topAt(xe)]];
+    for (let j = 1; j < 4; j++) {                        // soft, uneven lift-off
+      const t = j/4;
+      pts.push([xe + leanE*(1 - t) + (R()-0.2)*3, topAt(xe) + (botAt(xe) - topAt(xe))*t]);
+    }
+    pts.push([xe - 1 - R()*4, botAt(xe)], [xs - lean/2, botAt(xs)], [xs - lean/2 - 1 - R()*1.5, (topAt(xs) + botAt(xs))/2]);
+    el('path', {class: S.cls + ' stroke', d: path(pts) + ' Z'}, gB);
+    // ink pools a little where the nib first touches down
+    el('ellipse', {class: S.cls + ' stroke', cx: f(xs + 2), cy: f((topAt(xs) + botAt(xs))/2), rx: f(2.5 + R()*1.5), ry: f((botAt(xs) - topAt(xs))/2 - 0.5)}, gB);
+  });
+  const gT = document.getElementById('traces');
+
+  // Light pencil rules along three contacts, drawn against the same straight edge and running just past the ends.
+  [52, 96, 144].forEach((y, i) => {
+    const end = [648, 624, 552][i] + 2 + R()*6, start = 36 + R()*3, tilt = (R()-0.5)*0.6;
+    el('path', {class:'trace', d: `M${f(start)} ${f(y)} L${f(end)} ${f(y + tilt)}`}, gT);
+  });
+</script>
+</body>
+</html>

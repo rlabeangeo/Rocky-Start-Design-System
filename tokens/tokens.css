@@ -1,0 +1,68 @@
+/* Rocky Start Exploration Services: design tokens as CSS custom properties.
+   Generated from tokens/tokens.json. Light theme ("Field Book") is the default;
+   set data-theme="dark" on <html> for the dark theme ("Headlamp"). */
+
+/* Kalam (field notes) is loaded from Google Fonts; the other faces ship in /fonts. */
+@import url("https://fonts.googleapis.com/css2?family=Kalam&display=swap");
+@font-face { font-family: "Alegreya SC"; src: url("../fonts/AlegreyaSC-Medium.ttf") format("truetype"); font-weight: 500; font-style: normal; font-display: swap; }
+@font-face { font-family: "Alegreya SC"; src: url("../fonts/AlegreyaSC-Bold.ttf") format("truetype"); font-weight: 700; font-style: normal; font-display: swap; }
+@font-face { font-family: "Courier Prime"; src: url("../fonts/CourierPrime-Regular.ttf") format("truetype"); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: "Courier Prime"; src: url("../fonts/CourierPrime-Bold.ttf") format("truetype"); font-weight: 700; font-style: normal; font-display: swap; }
+
+:root, [data-theme="light"] {
+  --paper: #f4ede0;
+  --paper-raised: #ebe1cf;
+  --ink: #2a2622;
+  --ink-muted: #6b6157;
+  --line: #cbbfa9;
+  --rust: #a4472a;
+  --pine: #3e5b3f;
+  --ochre: #c8963e;
+  --ink-on-ochre: #2a2622;
+  --slate: #486572;
+  --sage: #c9cfb4;
+}
+
+[data-theme="dark"] {
+  --paper: #1c1915;
+  --paper-raised: #26221d;
+  --ink: #efe7da;
+  --ink-muted: #b3a796;
+  --line: #3d362e;
+  --rust: #d9774f;
+  --pine: #8fb08a;
+  --ochre: #d8a952;
+  --ink-on-ochre: #1c1915;
+  --slate: #8fb0bd;
+  --sage: #3a4034;
+}
+
+:root {
+  --space-2: 8px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-10: 40px;
+  --radius-none: 0px;
+  --radius-sm: 2px;
+  --radius-md: 6px;
+  --rough-wobble: 1px;
+  --rough-displace: 1;
+  --rough-frequency: 0.04;
+  --rough-overshoot: 4px;
+  --rough-jitter: 1px;
+  --opacity-marker: 0.62;
+  --opacity-pencil-line: 0.55;
+  --opacity-dot-max: 0.6;
+  --font-smallcaps: "Alegreya SC", Georgia, serif;
+  --font-typewriter: "Courier Prime", "Courier New", monospace;
+  --font-hand: Kalam, "Bradley Hand", cursive;
+}
+
+/* Type styles */
+.display { font-family: var(--font-smallcaps); font-size: 52px; line-height: 54px; font-weight: 500; letter-spacing: 0.01em; }
+.heading { font-family: var(--font-smallcaps); font-size: 30px; line-height: 36px; font-weight: 500; letter-spacing: 0.01em; }
+.subheading { font-family: var(--font-smallcaps); font-size: 22px; line-height: 28px; font-weight: 500; letter-spacing: 0.02em; }
+.body { font-family: var(--font-typewriter); font-size: 16px; line-height: 24px; font-weight: 400; }
+.data { font-family: var(--font-typewriter); font-size: 14px; line-height: 20px; font-weight: 400; }
+.label { font-family: var(--font-typewriter); font-size: 12px; line-height: 16px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+.note { font-family: var(--font-hand); font-size: 18px; line-height: 24px; font-weight: 400; }
